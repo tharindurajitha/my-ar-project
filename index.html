@@ -16,11 +16,11 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: true;">
 
-      <!-- LIGHTING (important for model visibility) -->
+      <!-- LIGHTING (important for GLB visibility) -->
       <a-light type="ambient" intensity="1"></a-light>
       <a-light type="directional" position="2 4 2" intensity="1"></a-light>
 
-      <!-- MODEL ASSET -->
+      <!-- PRELOAD MODEL -->
       <a-assets>
         <a-asset-item id="model" src="crankshaft.glb"></a-asset-item>
       </a-assets>
@@ -28,12 +28,12 @@
       <!-- MARKER -->
       <a-marker preset="hiro">
 
-        <!-- YOUR BLENDER MODEL -->
+        <!-- 3D MODEL -->
         <a-entity
           gltf-model="#model"
           position="0 0.5 0"
-          scale="2 2 2"
-          rotation="-90 0 0">
+          rotation="-90 0 0"
+          scale="0.5 0.5 0.5">
         </a-entity>
 
       </a-marker>
