@@ -9,7 +9,7 @@
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-    <!-- Animation support -->
+    <!-- For GLB animation -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
   </head>
 
@@ -17,10 +17,7 @@
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
 
-      <!-- Enable click interaction -->
-      <a-entity cursor="rayOrigin: mouse"></a-entity>
-
-      <!-- LIGHT -->
+      <!-- LIGHTING -->
       <a-light type="ambient" intensity="1"></a-light>
       <a-light type="directional" position="2 4 2"></a-light>
 
@@ -30,51 +27,29 @@
         <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
       </a-assets>
 
-      <!-- ========================= -->
       <!-- MARKER 1 : CRANKSHAFT -->
-      <!-- ========================= -->
       <a-marker type="pattern" url="marker.patt">
 
-        <!-- MODEL -->
         <a-entity
-          id="crankModel"
           gltf-model="#crank"
           position="0 0.5 0"
           scale="0.5 0.5 0.5"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer>
         </a-entity>
-
-        <!-- BUTTON -->
-        <a-box id="btnCrank"
-               position="1 0.3 0"
-               scale="0.3 0.3 0.3"
-               color="blue">
-        </a-box>
 
       </a-marker>
 
-      <!-- ========================= -->
       <!-- MARKER 2 : SOLID SHAFT -->
-      <!-- ========================= -->
       <a-marker type="pattern" url="markersolidshaft.patt">
 
-        <!-- MODEL -->
         <a-entity
-          id="solidModel"
           gltf-model="#solid"
           position="0 0.5 0"
-          scale="0.001 0.001 0.001"
+          scale="0.1 0.1 0.1"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer>
         </a-entity>
-
-        <!-- BUTTON -->
-        <a-box id="btnSolid"
-               position="1 0.3 0"
-               scale="0.3 0.3 0.3"
-               color="green">
-        </a-box>
 
       </a-marker>
 
@@ -82,45 +57,6 @@
       <a-entity camera></a-entity>
 
     </a-scene>
-
-    <!-- ========================= -->
-    <!-- INTERACTION SCRIPT -->
-    <!-- ========================= -->
-    <script>
-      // CRANKSHAFT CONTROL
-      let crankReverse = false;
-      const crankBtn = document.querySelector("#btnCrank");
-      const crankModel = document.querySelector("#crankModel");
-
-      crankBtn.addEventListener("click", () => {
-        if (!crankReverse) {
-          crankModel.setAttribute("animation",
-            "property: rotation; to: 0 -360 0; loop: true; dur: 4000");
-          crankReverse = true;
-        } else {
-          crankModel.setAttribute("animation",
-            "property: rotation; to: 0 360 0; loop: true; dur: 4000");
-          crankReverse = false;
-        }
-      });
-
-      // SOLID SHAFT CONTROL
-      let solidReverse = false;
-      const solidBtn = document.querySelector("#btnSolid");
-      const solidModel = document.querySelector("#solidModel");
-
-      solidBtn.addEventListener("click", () => {
-        if (!solidReverse) {
-          solidModel.setAttribute("animation",
-            "property: rotation; to: 0 -360 0; loop: true; dur: 4000");
-          solidReverse = true;
-        } else {
-          solidModel.setAttribute("animation",
-            "property: rotation; to: 0 360 0; loop: true; dur: 4000");
-          solidReverse = false;
-        }
-      });
-    </script>
 
   </body>
 </html>
