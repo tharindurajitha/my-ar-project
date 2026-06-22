@@ -3,8 +3,13 @@
   <head>
     <meta charset="utf-8" />
 
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+
+    <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <!-- For GLB animation -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
   </head>
 
@@ -12,7 +17,7 @@
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: true;">
 
-      <!-- LIGHT -->
+      <!-- LIGHTING -->
       <a-light type="ambient" intensity="1"></a-light>
       <a-light type="directional" position="2 4 2"></a-light>
 
@@ -22,25 +27,33 @@
         <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
       </a-assets>
 
-      <!-- MARKER 1 -->
+      <!-- MARKER 1 : CRANKSHAFT -->
       <a-marker type="pattern" url="marker.patt">
-        <a-entity gltf-model="#crank"
-                  position="0 0.5 0"
-                  scale="0.5 0.5 0.5"
-                  rotation="-90 0 0"
-                  animation-mixer>
+
+        <a-entity
+          gltf-model="#crank"
+          position="0 0.5 0"
+          scale="0.5 0.5 0.5"
+          rotation="-90 0 0"
+          animation-mixer>
         </a-entity>
+
       </a-marker>
 
-      <!-- MARKER 2 -->
+      <!-- MARKER 2 : SOLID SHAFT -->
       <a-marker type="pattern" url="markersolidshaft.patt">
-        <a-entity gltf-model="#solid"
-                  position="0 0.5 0"
-                  scale="0.005 0.005 0.005"
-                  rotation="-90 0 0"
-                  animation-mixer>
+
+        <a-entity
+          gltf-model="#solid"
+          position="0 0.5 0"
+          scale="0.001 0.001 0.001"
+          rotation="-90 0 0"
+          animation-mixer>
         </a-entity>
+
       </a-marker>
+
+      <!-- CAMERA -->
       <a-entity camera></a-entity>
 
     </a-scene>
