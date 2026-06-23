@@ -25,6 +25,7 @@
       <a-assets>
         <a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
         <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
+        <a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
       </a-assets>
 
       <!-- MARKER 1 : CRANKSHAFT -->
@@ -45,6 +46,17 @@
 
         <a-entity
           gltf-model="#solid"
+          position="0 0.5 0"
+          scale="0.1 0.1 0.1"
+          rotation="-90 0 0"
+          animation-mixer>
+        </a-entity>
+
+      </a-marker>
+      <a-marker type="pattern" url="markerhollowshaft.patt">
+
+        <a-entity
+          gltf-model="#hollow"
           position="0 0.5 0"
           scale="0.1 0.1 0.1"
           rotation="-90 0 0"
