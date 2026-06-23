@@ -29,7 +29,7 @@
   <body style="margin: 0; overflow: hidden;">
 
     <!-- UI BUTTON -->
-    <button id="uiButton">Reverse X Rotation</button>
+    <button id="uiButton">Reverse Rotation</button>
 
     <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false">
 
@@ -43,46 +43,77 @@
         <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
         <a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
         <a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
+
+        <!-- Arrow model -->
+        <a-asset-item id="arrowModel" src="arrow.glb"></a-asset-item>
       </a-assets>
 
       <!-- ================= MARKER 1 ================= -->
       <a-marker type="pattern" url="marker.patt">
-        <a-entity class="shaftWrapper"
-          gltf-model="#crank"
-          position="0 0.5 0"
-          scale="0.5 0.5 0.5"
-          rotation="-90 0 0">
+
+        <a-entity class="shaftWrapper">
+          <a-entity gltf-model="#crank"
+                    position="0 0.5 0"
+                    scale="0.5 0.5 0.5"
+                    rotation="-90 0 0"></a-entity>
+
+          <a-entity class="arrow"
+                    gltf-model="#arrowModel"
+                    position="0 1 0"
+                    scale="0.2 0.2 0.2"></a-entity>
         </a-entity>
+
       </a-marker>
 
       <!-- ================= MARKER 2 ================= -->
       <a-marker type="pattern" url="markersolidshaft.patt">
-        <a-entity class="shaftWrapper"
-          gltf-model="#solid"
-          position="0 0.5 0"
-          scale="0.2 0.2 0.2"
-          rotation="-90 0 0">
+
+        <a-entity class="shaftWrapper">
+          <a-entity gltf-model="#solid"
+                    position="0 0.5 0"
+                    scale="0.3 0.3 0.3"
+                    rotation="-90 0 0"></a-entity>
+
+          <a-entity class="arrow"
+                    gltf-model="#arrowModel"
+                    position="0 1 0"
+                    scale="0.2 0.2 0.2"></a-entity>
         </a-entity>
+
       </a-marker>
 
       <!-- ================= MARKER 3 ================= -->
       <a-marker type="pattern" url="markerhollowshaft.patt">
-        <a-entity class="shaftWrapper"
-          gltf-model="#hollow"
-          position="0 0.5 0"
-          scale="0.2 0.2 0.2"
-          rotation="-90 0 0">
+
+        <a-entity class="shaftWrapper">
+          <a-entity gltf-model="#hollow"
+                    position="0 0.5 0"
+                    scale="0.2 0.2 0.2"
+                    rotation="-90 0 0"></a-entity>
+
+          <a-entity class="arrow"
+                    gltf-model="#arrowModel"
+                    position="0 1 0"
+                    scale="0.2 0.2 0.2"></a-entity>
         </a-entity>
+
       </a-marker>
 
       <!-- ================= MARKER 4 ================= -->
       <a-marker type="pattern" url="markersteppedshaft.patt">
-        <a-entity class="shaftWrapper"
-          gltf-model="#stepped"
-          position="0 0.5 0"
-          scale="0.2 0.2 0.2"
-          rotation="-90 0 0">
+
+        <a-entity class="shaftWrapper">
+          <a-entity gltf-model="#stepped"
+                    position="0 0.5 0"
+                    scale="0.15 0.15 0.15"
+                    rotation="-90 0 0"></a-entity>
+
+          <a-entity class="arrow"
+                    gltf-model="#arrowModel"
+                    position="0 1 0"
+                    scale="0.2 0.2 0.2"></a-entity>
         </a-entity>
+
       </a-marker>
 
       <a-entity camera></a-entity>
@@ -94,16 +125,20 @@
       let direction = 1;
       let angle = 0;
 
-      const button = document.getElementById("uiButton");
-
-      button.addEventListener("click", () => {
+      document.getElementById("uiButton").addEventListener("click", () => {
         direction *= -1;
       });
 
       function animate() {
-        angle += direction * 2; // speed
+        angle += direction * 2;
 
+        // rotate shafts
         document.querySelectorAll(".shaftWrapper").forEach(obj => {
+          obj.setAttribute("rotation", `${angle} 0 0`);
+        });
+
+        // rotate arrows (SYNCED)
+        document.querySelectorAll(".arrow").forEach(obj => {
           obj.setAttribute("rotation", `${angle} 0 0`);
         });
 
