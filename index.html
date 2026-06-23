@@ -13,7 +13,6 @@
       left: 50%;
       transform: translateX(-50%);
       padding: 12px 20px;
-      font-size: 16px;
       background: #007bff;
       color: white;
       border: none;
@@ -21,56 +20,60 @@
       z-index: 999;
     }
   </style>
+
+  <script>
+    AFRAME.registerComponent('shaft-system', {
+      init: function () {
+        this.angle = 0;
+        this.direction = 1;
+
+        document.addEventListener("toggle", () => {
+          this.direction *= -1;
+        });
+
+        this.arrow = null;
+      },
+
+      tick: function () {
+        this.angle += this.direction * 2;
+
+        // rotate shaft
+        this.el.setAttribute("rotation", `${this.angle} 0 0`);
+
+        // IMPORTANT: find arrow INSIDE marker every frame (AR.js safe way)
+        if (!this.arrow) {
+          this.arrow = this.el.querySelector(".arrow");
+        }
+
+        if (this.arrow) {
+          let t = (Math.sin(this.angle * 0.05) + 1) / 2;
+          this.arrow.setAttribute("position", `0 0 ${1.5 - t * 1.5}`);
+        }
+      }
+    });
+  </script>
 </head>
 
 <body style="margin:0; overflow:hidden;">
 
-<!-- UI BUTTON -->
 <button id="uiButton">Reverse Rotation</button>
 
 <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled:false">
 
   <a-light type="ambient" intensity="1"></a-light>
-  <a-light type="directional" position="2 4 2"></a-light>
 
   <a-assets>
     <a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
-    <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
-    <a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
-    <a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
-
     <a-asset-item id="arrowModel" src="arrow.glb"></a-asset-item>
   </a-assets>
 
-  <!-- ================= MARKER 1 ================= -->
+  <!-- MARKER -->
   <a-marker type="pattern" url="marker.patt">
 
-    <!-- ✅ PIVOT WRAPPER (THIS FIXES YOUR AXIS ISSUE) -->
-    <a-entity class="shaftPivot">
+    <a-entity shaft-system>
 
-      <!-- SHAFT -->
       <a-entity gltf-model="#crank"
                 scale="0.5 0.5 0.5"
-                rotation="-90 0 0">
-      </a-entity>
-
-      <!-- ARROW -->
-      <a-entity class="arrow"
-                gltf-model="#arrowModel"
-                scale="0.2 0.2 0.2"
-                position="0 0 1.5">
-      </a-entity>
-
-    </a-entity>
-
-  </a-marker>
-
-  <!-- ================= MARKER 2 ================= -->
-  <a-marker type="pattern" url="markersolidshaft.patt">
-    <a-entity class="shaftPivot">
-
-      <a-entity gltf-model="#solid"
-                scale="0.2 0.2 0.2"
                 rotation="-90 0 0"></a-entity>
 
       <a-entity class="arrow"
@@ -79,65 +82,17 @@
                 position="0 0 1.5"></a-entity>
 
     </a-entity>
-  </a-marker>
 
-  <!-- ================= MARKER 3 ================= -->
-  <a-marker type="pattern" url="markerhollowshaft.patt">
-    <a-entity class="shaftPivot">
-
-      <a-entity gltf-model="#hollow"
-                scale="0.2 0.2 0.2"
-                rotation="-90 0 0"></a-entity>
-
-      <a-entity class="arrow"
-                gltf-model="#arrowModel"
-                scale="0.2 0.2 0.2"
-                position="0 0 1.5"></a-entity>
-
-    </a-entity>
-  </a-marker>
-
-  <!-- ================= MARKER 4 ================= -->
-  <a-marker type="pattern" url="markersteppedshaft.patt">
-    <a-entity class="shaftPivot">
-
-      <a-entity gltf-model="#stepped"
-                scale="0.2 0.2 0.2"
-                rotation="-90 0 0"></a-entity>
-
-      <a-entity class="arrow"
-                gltf-model="#arrowModel"
-                scale="0.2 0.2 0.2"
-                position="0 0 1.5"></a-entity>
-
-    </a-entity>
   </a-marker>
 
   <a-entity camera></a-entity>
 
 </a-scene>
 
-<!-- ================= JS ================= -->
 <script>
-let direction = 1;
-let angle = 0;
-
 document.getElementById("uiButton").addEventListener("click", () => {
-  direction *= -1;
+  document.dispatchEvent(new Event("toggle"));
 });
-
-function animate() {
-  angle += direction * 2;
-
-  // ✅ ROTATE ONLY PIVOT (FIXES ORBIT ISSUE)
-  document.querySelectorAll(".shaftPivot").forEach(obj => {
-    obj.setAttribute("rotation", `${angle} 0 0`);
-  });
-
-  requestAnimationFrame(animate);
-}
-
-animate();
 </script>
 
 </body>
