@@ -1,85 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
+    <meta charset="utf-8" />
+    <title>AR.js Shaft Models</title>
 
-<!-- A-Frame -->
-<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 
-<!-- AR.js -->
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-<!-- For GLB animation -->
-<script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+    <style>
+        .ui-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            font-family: sans-serif;
+        }
+        .control-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+    </style>
+
+    <script>
+        // Custom A-Frame component to handle smooth rotation on the X-axis
+        AFRAME.registerComponent('axis-spinner', {
+            schema: {
+                speed: { type: 'number', default: 1 } // Degrees per frame
+            },
+            tick: function () {
+                // This runs on every render frame
+                // Rotates the model around its local X-axis
+                this.el.object3D.rotation.x += THREE.MathUtils.degToRad(this.data.speed);
+            }
+        });
+    </script>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
 
+    <div class="ui-container">
+        <button id="reverseBtn" class="control-btn">Flip X-Spin Direction</button>
+    </div>
+
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
 
-<!-- LIGHTING -->
-<a-light type="ambient" intensity="1"></a-light>
-<a-light type="directional" position="2 4 2"></a-light>
+        <a-light type="ambient" intensity="1"></a-light>
+        <a-light type="directional" position="2 4 2"></a-light>
 
-<!-- ASSETS -->
-<a-assets>
-<a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
-<a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
-<a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
-<a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
-</a-assets>
+        <a-assets>
+            <a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
+            <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
+            <a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
+            <a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
+        </a-assets>
 
-<!-- MARKER 1 : CRANKSHAFT -->
-<a-marker type="pattern" url="marker.patt">
+        <a-marker type="pattern" url="marker.patt">
+            <a-entity
+                class="shaft-model"
+                gltf-model="#crank"
+                position="0 0.5 0"
+                scale="0.5 0.5 0.5"
+                rotation="-90 0 0"
+                animation-mixer
+                axis-spinner="speed: 1">
+            </a-entity>
+        </a-marker>
 
-<a-entity
-gltf-model="#crank"
-position="0 0.5 0"
-scale="0.5 0.5 0.5"
-rotation="-90 0 0"
-animation-mixer>
-</a-entity>
+        <a-marker type="pattern" url="markersolidshaft.patt">
+            <a-entity
+                class="shaft-model"
+                gltf-model="#solid"
+                position="0 0.5 0"
+                scale="0.2 0.2 0.2"
+                rotation="-90 0 0"
+                animation-mixer
+                axis-spinner="speed: 1">
+            </a-entity>
+        </a-marker>
 
-</a-marker>
+        <a-marker type="pattern" url="markerhollowshaft.patt">
+            <a-entity
+                class="shaft-model"
+                gltf-model="#hollow"
+                position="0 0.5 0"
+                scale="0.2 0.2 0.2"
+                rotation="-90 0 0"
+                animation-mixer
+                axis-spinner="speed: 1">
+            </a-entity>
+        </a-marker>
 
-<!-- MARKER 2 : SOLID SHAFT -->
-<a-marker type="pattern" url="markersolidshaft.patt">
+        <a-marker type="pattern" url="markersteppedshaft.patt">
+            <a-entity
+                class="shaft-model"
+                gltf-model="#stepped"
+                position="0 0.5 0"
+                scale="0.2 0.2 0.2"
+                rotation="-90 0 0"
+                animation-mixer
+                axis-spinner="speed: 1">
+            </a-entity>
+        </a-marker>
 
-<a-entity
-gltf-model="#solid"
-position="0 0.5 0"
-scale="0.2 0.2 0.2"
-rotation="-90 0 0"
-animation-mixer>
-</a-entity>
+        <a-entity camera></a-entity>
 
-</a-marker>
-<a-marker type="pattern" url="markerhollowshaft.patt">
+    </a-scene>
 
-<a-entity
-gltf-model="#hollow"
-position="0 0.5 0"
-scale="0.2 0.2 0.2"
-rotation="-90 0 0"
-animation-mixer>
-</a-entity>
+    <script>
+        let currentRotationSpeed = 1; // Start with forward speed
 
-</a-marker>
-<a-marker type="pattern" url="markersteppedshaft.patt">
+        document.getElementById('reverseBtn').addEventListener('click', function() {
+            // Multiply by -1 to invert the direction (e.g., 1 becomes -1, -1 becomes 1)
+            currentRotationSpeed *= -1;
 
-<a-entity
-gltf-model="#stepped"
-position="0 0.5 0"
-scale="0.2 0.2 0.2"
-rotation="-90 0 0"
-animation-mixer>
-</a-entity>
-
-</a-marker>
-<!-- CAMERA -->
-<a-entity camera></a-entity>
-
-</a-scene>
+            // Update the custom spinner component on all models
+            const models = document.querySelectorAll('.shaft-model');
+            models.forEach(model => {
+                model.setAttribute('axis-spinner', `speed: ${currentRotationSpeed}`);
+            });
+        });
+    </script>
 
 </body>
 </html>
