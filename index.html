@@ -9,9 +9,6 @@
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-    <!-- Animation system -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-
     <style>
       #uiButton {
         position: fixed;
@@ -32,7 +29,7 @@
   <body style="margin: 0; overflow: hidden;">
 
     <!-- UI BUTTON -->
-    <button id="uiButton">Reverse Rotation</button>
+    <button id="uiButton">Reverse X Rotation</button>
 
     <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false">
 
@@ -50,71 +47,70 @@
 
       <!-- ================= MARKER 1 ================= -->
       <a-marker type="pattern" url="marker.patt">
-        <a-entity class="shaft"
+        <a-entity class="shaftWrapper"
           gltf-model="#crank"
           position="0 0.5 0"
           scale="0.5 0.5 0.5"
-          rotation="-90 0 0"
-          animation-mixer="timeScale: 1">
+          rotation="-90 0 0">
         </a-entity>
       </a-marker>
 
       <!-- ================= MARKER 2 ================= -->
       <a-marker type="pattern" url="markersolidshaft.patt">
-        <a-entity class="shaft"
+        <a-entity class="shaftWrapper"
           gltf-model="#solid"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
-          rotation="-90 0 0"
-          animation-mixer="timeScale: 1">
+          rotation="-90 0 0">
         </a-entity>
       </a-marker>
 
       <!-- ================= MARKER 3 ================= -->
       <a-marker type="pattern" url="markerhollowshaft.patt">
-        <a-entity class="shaft"
+        <a-entity class="shaftWrapper"
           gltf-model="#hollow"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
-          rotation="-90 0 0"
-          animation-mixer="timeScale: 1">
+          rotation="-90 0 0">
         </a-entity>
       </a-marker>
 
       <!-- ================= MARKER 4 ================= -->
       <a-marker type="pattern" url="markersteppedshaft.patt">
-        <a-entity class="shaft"
+        <a-entity class="shaftWrapper"
           gltf-model="#stepped"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
-          rotation="-90 0 0"
-          animation-mixer="timeScale: 1">
+          rotation="-90 0 0">
         </a-entity>
       </a-marker>
 
-      <!-- CAMERA -->
       <a-entity camera></a-entity>
 
     </a-scene>
 
-    <!-- ================= CONTROL SCRIPT ================= -->
+    <!-- ================= JS CONTROL ================= -->
     <script>
-      let reversed = false;
+      let direction = 1;
+      let angle = 0;
+
       const button = document.getElementById("uiButton");
 
       button.addEventListener("click", () => {
-        const shafts = document.querySelectorAll(".shaft");
+        direction *= -1;
+      });
 
-        shafts.forEach(model => {
-          if (!reversed) {
-            model.setAttribute("animation-mixer", "timeScale: -1");
-          } else {
-            model.setAttribute("animation-mixer", "timeScale: 1");
-          }
+      function animate() {
+        angle += direction * 2; // speed
+
+        document.querySelectorAll(".shaftWrapper").forEach(obj => {
+          obj.setAttribute("rotation", `${angle} 0 0`);
         });
 
-        reversed = !reversed;
-      });
+        requestAnimationFrame(animate);
+      }
+
+      animate();
     </script>
 
   </body>
