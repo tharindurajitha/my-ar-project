@@ -1,142 +1,96 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
+<head>
+  <meta charset="utf-8" />
 
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-    <style>
-      #uiButton {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 20px;
-        font-size: 16px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        z-index: 999;
-      }
-    </style>
+  <style>
+    #uiButton {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      z-index: 999;
+    }
+  </style>
+</head>
 
-    <!-- ROTATION COMPONENT -->
-    <script>
-      AFRAME.registerComponent('shaft-rotator', {
-        init: function () {
-          this.angle = 0;
-          this.direction = 1;
+<body style="margin:0; overflow:hidden;">
 
-          document.addEventListener("toggle-rotation", () => {
-            this.direction *= -1;
-          });
-        },
+<button id="uiButton">Reverse Rotation</button>
 
-        tick: function () {
-          this.angle += this.direction * 2;
+<a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled:false">
 
-          // ONLY X-axis rotation (Blender axis preserved)
-          this.el.setAttribute("rotation", `${this.angle} 0 0`);
-        }
-      });
-    </script>
-  </head>
+  <a-light type="ambient" intensity="1"></a-light>
 
-  <body style="margin: 0; overflow: hidden;">
+  <a-assets>
+    <a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
+    <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
+    <a-asset-item id="arrowModel" src="arrow.glb"></a-asset-item>
+  </a-assets>
 
-    <!-- UI BUTTON -->
-    <button id="uiButton">Reverse Rotation</button>
+  <!-- MARKER -->
+  <a-marker type="pattern" url="marker.patt">
 
-    <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false">
+    <!-- SHAFT -->
+    <a-entity id="shaft" gltf-model="#crank"
+              position="0 0.5 0"
+              scale="0.5 0.5 0.5"
+              rotation="-90 0 0">
+    </a-entity>
 
-      <a-light type="ambient" intensity="1"></a-light>
-      <a-light type="directional" position="2 4 2"></a-light>
+    <!-- ARROWS (FLOW EFFECT) -->
+    <a-entity id="arrow1" gltf-model="#arrowModel"
+              position="0 0 2"
+              scale="0.2 0.2 0.2"></a-entity>
 
-      <a-assets>
-        <a-asset-item id="crank" src="crankshaft.glb"></a-asset-item>
-        <a-asset-item id="solid" src="solidshaft.glb"></a-asset-item>
-        <a-asset-item id="hollow" src="hollowshaft.glb"></a-asset-item>
-        <a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
+    <a-entity id="arrow2" gltf-model="#arrowModel"
+              position="0 0 2.5"
+              scale="0.2 0.2 0.2"></a-entity>
 
-        <a-asset-item id="arrowModel" src="arrow.glb"></a-asset-item>
-      </a-assets>
+  </a-marker>
 
-      <!-- ================= MARKER 1 ================= -->
-      <a-marker type="pattern" url="marker.patt">
-        <a-entity shaft-rotator>
+  <a-entity camera></a-entity>
 
-          <a-entity gltf-model="#crank"
-                    position="0 0.5 0"
-                    scale="0.5 0.5 0.5"
-                    rotation="-90 0 0"></a-entity>
+</a-scene>
 
-          <a-entity gltf-model="#arrowModel"
-                    position="0 1 0"
-                    scale="0.2 0.2 0.2"></a-entity>
+<script>
+  let direction = 1;
+  let angle = 0;
 
-        </a-entity>
-      </a-marker>
+  document.getElementById("uiButton").addEventListener("click", () => {
+    direction *= -1;
+  });
 
-      <!-- ================= MARKER 2 ================= -->
-      <a-marker type="pattern" url="markersolidshaft.patt">
-        <a-entity shaft-rotator>
+  function animate() {
+    angle += direction * 2;
 
-          <a-entity gltf-model="#solid"
-                    position="0 0.5 0"
-                    scale="0.2 0.2 0.2"
-                    rotation="-90 0 0"></a-entity>
+    // ✅ SHAFT rotates ONLY on X axis
+    const shaft = document.querySelector("#shaft");
+    shaft.setAttribute("rotation", `${angle} 0 0`);
 
-          <a-entity gltf-model="#arrowModel"
-                    position="0 1 0"
-                    scale="0.2 0.2 0.2"></a-entity>
+    // ✅ ARROW FLOW MOVEMENT (inwards/outwards)
+    let t = (Math.sin(angle * 0.05) + 1) / 2; // 0 → 1 smooth loop
 
-        </a-entity>
-      </a-marker>
+    document.querySelector("#arrow1")
+      .setAttribute("position", `0 0 ${2 - t * 2}`);
 
-      <!-- ================= MARKER 3 ================= -->
-      <a-marker type="pattern" url="markerhollowshaft.patt">
-        <a-entity shaft-rotator>
+    document.querySelector("#arrow2")
+      .setAttribute("position", `0 0 ${2.5 - t * 2}`);
 
-          <a-entity gltf-model="#hollow"
-                    position="0 0.5 0"
-                    scale="0.2 0.2 0.2"
-                    rotation="-90 0 0"></a-entity>
+    requestAnimationFrame(animate);
+  }
 
-          <a-entity gltf-model="#arrowModel"
-                    position="0 1 0"
-                    scale="0.2 0.2 0.2"></a-entity>
+  animate();
+</script>
 
-        </a-entity>
-      </a-marker>
-
-      <!-- ================= MARKER 4 ================= -->
-      <a-marker type="pattern" url="markersteppedshaft.patt">
-        <a-entity shaft-rotator>
-
-          <a-entity gltf-model="#stepped"
-                    position="0 0.5 0"
-                    scale="0.2 0.2 0.2"
-                    rotation="-90 0 0"></a-entity>
-
-          <a-entity gltf-model="#arrowModel"
-                    position="0 1 0"
-                    scale="0.2 0.2 0.2"></a-entity>
-
-        </a-entity>
-      </a-marker>
-
-      <a-entity camera></a-entity>
-
-    </a-scene>
-
-    <!-- BUTTON CONTROL -->
-    <script>
-      document.getElementById("uiButton").addEventListener("click", () => {
-        document.dispatchEvent(new Event("toggle-rotation"));
-      });
-    </script>
-
-  </body>
+</body>
 </html>
