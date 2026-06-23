@@ -9,24 +9,22 @@
     <!-- AR.js -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-    <!-- Animation -->
+    <!-- Animation system -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
     <style>
-      /* UI BUTTON STYLE */
       #uiButton {
         position: fixed;
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 15px 25px;
+        padding: 12px 20px;
         font-size: 16px;
         background: #007bff;
         color: white;
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         z-index: 999;
-        cursor: pointer;
       }
     </style>
   </head>
@@ -50,55 +48,56 @@
         <a-asset-item id="stepped" src="steppedshaft.glb"></a-asset-item>
       </a-assets>
 
-      <!-- CRANK -->
+      <!-- ================= MARKER 1 ================= -->
       <a-marker type="pattern" url="marker.patt">
         <a-entity class="shaft"
           gltf-model="#crank"
           position="0 0.5 0"
           scale="0.5 0.5 0.5"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer="timeScale: 1">
         </a-entity>
       </a-marker>
 
-      <!-- SOLID -->
+      <!-- ================= MARKER 2 ================= -->
       <a-marker type="pattern" url="markersolidshaft.patt">
         <a-entity class="shaft"
           gltf-model="#solid"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer="timeScale: 1">
         </a-entity>
       </a-marker>
 
-      <!-- HOLLOW -->
+      <!-- ================= MARKER 3 ================= -->
       <a-marker type="pattern" url="markerhollowshaft.patt">
         <a-entity class="shaft"
           gltf-model="#hollow"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer="timeScale: 1">
         </a-entity>
       </a-marker>
 
-      <!-- STEPPED -->
+      <!-- ================= MARKER 4 ================= -->
       <a-marker type="pattern" url="markersteppedshaft.patt">
         <a-entity class="shaft"
           gltf-model="#stepped"
           position="0 0.5 0"
           scale="0.2 0.2 0.2"
           rotation="-90 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
+          animation-mixer="timeScale: 1">
         </a-entity>
       </a-marker>
 
+      <!-- CAMERA -->
       <a-entity camera></a-entity>
 
     </a-scene>
 
-    <!-- SCRIPT -->
+    <!-- ================= CONTROL SCRIPT ================= -->
     <script>
       let reversed = false;
       const button = document.getElementById("uiButton");
@@ -108,11 +107,9 @@
 
         shafts.forEach(model => {
           if (!reversed) {
-            model.setAttribute("animation",
-              "property: rotation; to: 0 -360 0; loop: true; dur: 4000");
+            model.setAttribute("animation-mixer", "timeScale: -1");
           } else {
-            model.setAttribute("animation",
-              "property: rotation; to: 0 360 0; loop: true; dur: 4000");
+            model.setAttribute("animation-mixer", "timeScale: 1");
           }
         });
 
